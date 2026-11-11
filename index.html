@@ -376,9 +376,9 @@
 
         let currentKey = 'pulsefm';
         let isPlaying = false;
-        let playState = 'stopped';
+        let playState = 'stopped'; // 'intro', 'jingle', 'song'
         let displayTimeout = null;
-        let lastTrackText = ""; // Memorizza cosa c'era in onda prima del volume
+        let lastTrackText = "";
 
         function getRandomItem(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
@@ -420,7 +420,7 @@
                 isPlaying = true;
                 radioBox.classList.add('playing');
                 playState = 'intro';
-                currentTrackInfo.textContent = ""; // Schermo pulito durante l'intro generale
+                currentTrackInfo.textContent = ""; 
                 audio.src = generalIntro;
                 audio.play().catch(e => console.log(e));
             } else {
@@ -438,19 +438,19 @@
             lastTrackText = "";
         }
 
+        // LOGICA DI ROTAZIONE CONTINUA A CATENA (Intro -> Jingle -> Canzone -> Jingle -> Canzone...)
         audio.onended = () => {
             if (!isPlaying) return;
 
             if (playState === 'intro') {
-                playNextDynamic();
+                // Finito l'intro generale, parte un jingle della stazione attiva
+                playRandomJingle();
             } else if (playState === 'jingle') {
+                // Finito il jingle, parte sempre una canzone casuale
                 playRandomSong();
             } else if (playState === 'song') {
-                if (Math.random() > 0.5) {
-                    playRandomJingle();
-                } else {
-                    playRandomSong();
-                }
+                // Finita la canzone, parte SEMPRE un jingle casuale prima della prossima canzone (stile radio reale)
+                playRandomJingle();
             }
         };
 
@@ -493,7 +493,6 @@
             
             displayTimeout = setTimeout(() => {
                 if (isPlaying) {
-                    // Ripristina esattamente l'ultimo testo riprodotto (che sia la canzone o il nome stazione)
                     currentTrackInfo.textContent = lastTrackText;
                 } else {
                     currentTrackInfo.textContent = "";
