@@ -377,12 +377,12 @@
         let currentKey = 'pulsefm';
         let isPlaying = false;
         let playState = 'stopped';
+        let displayTimeout = null;
 
         function getRandomItem(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
 
-        // Funzione per estrarre e ripulire il nome del file dall'URL
         function getSongTitle(url) {
             try {
                 const decoded = decodeURIComponent(url);
@@ -399,12 +399,18 @@
             stationNameTag.textContent = st.name;
             tunerNeedle.style.left = st.freq;
             
+            clearTimeout(displayTimeout);
+            currentTrackInfo.textContent = st.name; // Mostra solo il nome della stazione
+
             if (isPlaying) {
                 playNextDynamic();
+            } else {
+                displayTimeout = setTimeout(() => {
+                    currentTrackInfo.textContent = "PRONTO";
+                }, 2000);
             }
         }
 
-        // Cambio stazione solo tramite il pomello Tuning
         tuningKnob.addEventListener('click', toggleStation);
 
         playBtn.addEventListener('click', () => {
@@ -455,7 +461,7 @@
             const jingleUrl = getRandomItem(st.jingles);
             audio.src = jingleUrl;
             audio.play().catch(e => console.log(e));
-            currentTrackInfo.textContent = `[${st.name} STATION ID]`;
+            currentTrackInfo.textContent = st.name; // Mostra solo il nome della stazione durante il jingle
         }
 
         function playRandomSong() {
@@ -464,7 +470,7 @@
             const songUrl = getRandomItem(st.songs);
             audio.src = songUrl;
             audio.play().catch(e => console.log(e));
-            currentTrackInfo.textContent = getSongTitle(songUrl);
+            currentTrackInfo.textContent = getSongTitle(songUrl); // Mostra il titolo della canzone
         }
 
         let currentVolume = 0.8;
@@ -476,13 +482,21 @@
             const deg = (currentVolume * 270) - 135;
             volMarker.style.transform = `translateX(-50%) rotate(${deg}deg)`;
             
-            const oldText = currentTrackInfo.textContent;
+            clearTimeout(displayTimeout);
             currentTrackInfo.textContent = `VOLUME: ${Math.round(currentVolume * 100)}%`;
-            setTimeout(() => {
+            
+            displayTimeout = setTimeout(() => {
                 if (isPlaying) {
-                    // Ripristina il testo precedente dopo un attimo
+                    if (playState === 'song') {
+                        // Ripristina l'ultimo stato (se era canzone, mostrava il titolo, ma qui per semplicità rimettiamo il nome stazione o attende il prossimo aggiornamento, oppure gestiamo lo stato corrente)
+                        currentTrackInfo.textContent = stations[currentKey].name;
+                    } else {
+                        currentTrackInfo.textContent = stations[currentKey].name;
+                    }
+                } else {
+                    currentTrackInfo.textContent = "PRONTO";
                 }
-            }, 1200);
+            }, 1500);
         });
     </script>
 </body>
