@@ -129,7 +129,6 @@
             color: #ffaa00;
             font-family: monospace;
             position: relative;
-            cursor: pointer;
         }
 
         .tuner-scales {
@@ -250,15 +249,6 @@
             0% { height: 10px; }
             100% { height: 36px; }
         }
-
-        .play-hint {
-            text-align: center;
-            font-size: 0.65rem;
-            color: #64748b;
-            margin-top: 4px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
     </style>
 </head>
 <body>
@@ -273,16 +263,16 @@
                 <div class="speaker-neon-circle"></div>
             </div>
 
-            <div class="tuner-section" id="station-display" title="Clicca per cambiare stazione">
+            <div class="tuner-section" id="station-display">
                 <div class="tuner-scales">
-                    <span id="station-name-tag">STAZIONE CORRENTE</span>
+                    <span id="station-name-tag">PULSEFM</span>
                     <span>FM 88 - 108 MHz</span>
                 </div>
                 <div class="tuner-line-container">
                     <div class="tuner-needle" id="tuner-needle"></div>
                 </div>
                 <div class="tuner-scales">
-                    <span id="current-track-info" style="font-size: 0.7rem; color: #ff007f;">PRONTO</span>
+                    <span id="current-track-info" style="font-size: 0.75rem; color: #ff007f; text-shadow: 0 0 8px #ff007f;">PRONTO</span>
                 </div>
             </div>
         </div>
@@ -303,7 +293,6 @@
                     <div class="eq-bar"></div>
                     <div class="eq-bar"></div>
                 </div>
-                <span class="play-hint" id="status-text">CLICCA PER ACCENDERE</span>
             </div>
 
             <div class="control-group">
@@ -320,10 +309,9 @@
     <audio id="main-audio"></audio>
 
     <script>
-        // CONFIGURAZIONE DELLE STAZIONI CON I NOMI REALI DEI FILE SU GITHUB
         const stations = {
             pulsefm: {
-                name: "PULSEFM (Pop Inglese)",
+                name: "PULSEFM",
                 freq: "58%",
                 jingles: [
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/jingles/intro.mp3",
@@ -379,7 +367,6 @@
         const audio = document.getElementById('main-audio');
         const playBtn = document.getElementById('play-btn');
         const radioBox = document.getElementById('radio-box');
-        const statusText = document.getElementById('status-text');
         const stationNameTag = document.getElementById('station-name-tag');
         const currentTrackInfo = document.getElementById('current-track-info');
         const tunerNeedle = document.getElementById('tuner-needle');
@@ -395,27 +382,37 @@
             return arr[Math.floor(Math.random() * arr.length)];
         }
 
+        // Funzione per estrarre e ripulire il nome del file dall'URL
+        function getSongTitle(url) {
+            try {
+                const decoded = decodeURIComponent(url);
+                const filename = decoded.substring(decoded.lastIndexOf('/') + 1);
+                return filename.replace('.mp3', '').toUpperCase();
+            } catch (e) {
+                return "IN ONDA";
+            }
+        }
+
         function toggleStation() {
             currentKey = (currentKey === 'pulsefm') ? 'reggaeton' : 'pulsefm';
             const st = stations[currentKey];
             stationNameTag.textContent = st.name;
             tunerNeedle.style.left = st.freq;
-            statusText.textContent = `STAZIONE: ${st.name}`;
             
             if (isPlaying) {
                 playNextDynamic();
             }
         }
 
+        // Cambio stazione solo tramite il pomello Tuning
         tuningKnob.addEventListener('click', toggleStation);
-        document.getElementById('station-display').addEventListener('click', toggleStation);
 
         playBtn.addEventListener('click', () => {
             if (!isPlaying) {
                 isPlaying = true;
                 radioBox.classList.add('playing');
                 playState = 'intro';
-                statusText.textContent = "ALGORHYTHM INTRO...";
+                currentTrackInfo.textContent = "ALGORHYTHM INTRO...";
                 audio.src = generalIntro;
                 audio.play().catch(e => console.log(e));
             } else {
@@ -429,7 +426,6 @@
             isPlaying = false;
             playState = 'stopped';
             radioBox.classList.remove('playing');
-            statusText.textContent = "IN PAUSA";
             currentTrackInfo.textContent = "PRONTO";
         }
 
@@ -459,8 +455,7 @@
             const jingleUrl = getRandomItem(st.jingles);
             audio.src = jingleUrl;
             audio.play().catch(e => console.log(e));
-            statusText.textContent = `${st.name} [JINGLE]`;
-            currentTrackInfo.textContent = "STATION ID";
+            currentTrackInfo.textContent = `[${st.name} STATION ID]`;
         }
 
         function playRandomSong() {
@@ -469,8 +464,7 @@
             const songUrl = getRandomItem(st.songs);
             audio.src = songUrl;
             audio.play().catch(e => console.log(e));
-            statusText.textContent = st.name;
-            currentTrackInfo.textContent = "IN ONDA";
+            currentTrackInfo.textContent = getSongTitle(songUrl);
         }
 
         let currentVolume = 0.8;
@@ -481,9 +475,13 @@
             audio.volume = currentVolume;
             const deg = (currentVolume * 270) - 135;
             volMarker.style.transform = `translateX(-50%) rotate(${deg}deg)`;
-            statusText.textContent = `VOLUME: ${Math.round(currentVolume * 100)}%`;
+            
+            const oldText = currentTrackInfo.textContent;
+            currentTrackInfo.textContent = `VOLUME: ${Math.round(currentVolume * 100)}%`;
             setTimeout(() => {
-                if (isPlaying) statusText.textContent = stations[currentKey].name;
+                if (isPlaying) {
+                    // Ripristina il testo precedente dopo un attimo
+                }
             }, 1200);
         });
     </script>
