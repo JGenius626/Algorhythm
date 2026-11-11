@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Algorhythm</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #06070b;
+            background-image: radial-gradient(circle at center, #141728 0%, #06070b 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Contenitore principale radio */
+        .radio-container {
+            position: relative;
+            width: 750px;
+            height: 420px;
+            background: #11131d;
+            border-radius: 40px;
+            padding: 25px;
+            box-shadow: 
+                0 0 30px rgba(0, 243, 255, 0.15),
+                0 0 60px rgba(255, 0, 128, 0.15),
+                inset 0 0 25px rgba(0,0,0,0.8);
+            border: 4px solid #2a2e45;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Neon esterno che incornicia la radio */
+        .radio-container::before {
+            content: '';
+            position: absolute;
+            top: -10px; left: -10px; right: -10px; bottom: -10px;
+            border-radius: 46px;
+            background: linear-gradient(90deg, #00f3ff, #ff007f);
+            z-index: -1;
+            filter: blur(12px);
+            opacity: 0.8;
+        }
+
+        /* Antenna superiore */
+        .antenna {
+            position: absolute;
+            top: -110px;
+            right: 120px;
+            width: 320px;
+            height: 6px;
+            background: linear-gradient(90deg, #888, #fff);
+            transform: rotate(-35deg);
+            transform-origin: bottom right;
+            border-radius: 3px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+        }
+
+        .antenna-tip {
+            position: absolute;
+            top: -130px;
+            right: 435px;
+            width: 14px;
+            height: 14px;
+            background: #ffaa00;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #ffaa00, 0 0 30px #ffaa00;
+        }
+
+        /* Pannello superiore/centrale */
+        .main-panel {
+            display: flex;
+            gap: 25px;
+            height: 230px;
+        }
+
+        /* Sezione Speaker a sinistra */
+        .speaker-section {
+            flex: 1.1;
+            background: #090a10;
+            border-radius: 25px;
+            border: 3px solid #222638;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
+        }
+
+        /* Griglia linee orizzontali speaker */
+        .speaker-grille {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(255, 255, 255, 0.03),
+                rgba(255, 255, 255, 0.03) 4px,
+                transparent 4px,
+                transparent 10px
+            );
+        }
+
+        /* Cerchio neon centrale speaker */
+        .speaker-neon-circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 4px solid #ff9900;
+            box-shadow: 0 0 15px #ffaa00, inset 0 0 15px #ffaa00;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        /* Display Frequenze a destra */
+        .tuner-section {
+            flex: 1.3;
+            background: #05060a;
+            border-radius: 20px;
+            border: 3px solid #ff007f;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.4), inset 0 0 15px rgba(0,0,0,0.8);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #ffaa00;
+            font-family: monospace;
+            position: relative;
+        }
+
+        .tuner-scales {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-shadow: 0 0 8px #ffaa00;
+        }
+
+        .tuner-numbers {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #ffcc66;
+            padding: 0 5px;
+        }
+
+        .tuner-line-container {
+            position: relative;
+            height: 35px;
+            border-top: 2px solid #ffaa00;
+            border-bottom: 2px solid #ffaa00;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Indicatore frequenza verticale */
+        .tuner-needle {
+            position: absolute;
+            left: 58%; /* Posizionato su 107.5 MHz */
+            width: 4px;
+            height: 30px;
+            background: #ff0055;
+            box-shadow: 0 0 12px #ff0055;
+            transform: translateX(-50%);
+            transition: left 0.5s ease;
+        }
+
+        /* Sezione inferiore: manopole e speaker indicator */
+        .bottom-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .control-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: #00f3ff;
+            text-shadow: 0 0 8px #00f3ff;
+        }
+
+        /* Manopole metalliche con neon */
+        .knob {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ddd 30%, #444 80%);
+            border: 4px solid #00f3ff;
+            box-shadow: 0 0 15px #00f3ff, inset 0 0 10px rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .knob-inner {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #555 20%, #111 90%);
+            border: 2px solid #222;
+            position: relative;
+        }
+
+        .knob-marker {
+            position: absolute;
+            top: 4px;
+            left: 50%;
+            width: 3px;
+            height: 14px;
+            background: #00f3ff;
+            transform: translateX(-50%);
+            border-radius: 2px;
+            box-shadow: 0 0 6px #00f3ff;
+        }
+
+        /* Equalizzatore centrale inferiore (tre barre neon) */
+        .eq-center-bars {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: #05060a;
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: 2px solid #ff9900;
+            box-shadow: 0 0 12px rgba(255,153,0,0.4);
+            cursor: pointer;
+        }
+
+        .eq-bar {
+            width: 8px;
+            height: 28px;
+            background: #ff9900;
+            border-radius: 4px;
+            box-shadow: 0 0 10px #ff9900;
+            transition: height 0.2s ease;
+        }
+
+        /* Stato attivo riproduzione */
+        .playing .eq-bar:nth-child(1) { animation: bounce 0.6s infinite alternate; }
+        .playing .eq-bar:nth-child(2) { animation: bounce 0.4s infinite alternate; }
+        .playing .eq-bar:nth-child(3) { animation-delay: 0.2s; animation: bounce 0.5s infinite alternate; }
+
+        .playing .speaker-neon-circle {
+            box-shadow: 0 0 25px #ffaa00, inset 0 0 20px #ffaa00;
+            transform: scale(1.02);
+        }
+
+        @keyframes bounce {
+            0% { height: 10px; }
+            100% { height: 36px; }
+        }
+
+        .play-hint {
+            text-align: center;
+            font-size: 0.65rem;
+            color: #64748b;
+            margin-top: 4px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="radio-container" id="radio-box">
+        <!-- Antenna -->
+        <div class="antenna"></div>
+        <div class="antenna-tip"></div>
+
+        <!-- Pannello Principale -->
+        <div class="main-panel">
+            <!-- Speaker -->
+            <div class="speaker-section">
+                <div class="speaker-grille"></div>
+                <div class="speaker-neon-circle"></div>
+            </div>
+
+            <!-- Display Frequenze -->
+            <div class="tuner-section">
+                <div class="tuner-scales">
+                    <span>FM</span>
+                    <span>88 92 96 100 104 108 MHz</span>
+                </div>
+                <div class="tuner-line-container">
+                    <div class="tuner-needle"></div>
+                </div>
+                <div class="tuner-scales">
+                    <span>AM</span>
+                    <span>530 700 900 1200 1600 kHz</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pannello Inferiore (Manopole e Play) -->
+        <div class="bottom-panel">
+            <!-- Manopola Volume -->
+            <div class="control-group">
+                <span class="control-label">VOLUME</span>
+                <div class="knob" id="volume-knob" title="Regola Volume">
+                    <div class="knob-inner">
+                        <div class="knob-marker" id="vol-marker"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pulsante Play / Pause Centrale (Equalizzatore) -->
+            <div class="control-group">
+                <div class="eq-center-bars" id="play-btn" title="Clicca per Avviare/Pausa Radio">
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                </div>
+                <span class="play-hint" id="status-text">CLICCA PER ACCENDERE</span>
+            </div>
+
+            <!-- Manopola Tuning -->
+            <div class="control-group">
+                <span class="control-label">TUNING</span>
+                <div class="knob" id="tuning-knob" title="PulseFM 107.5 MHz">
+                    <div class="knob-inner">
+                        <div class="knob-marker"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUDIO SEPARATI: Intro Algorhythm + Streaming Radio Principale -->
+    <audio id="intro-audio" src="" preload="auto"></audio>
+    <audio id="radio-audio" src="https://github.com/JGenius626/Algorhythm/releases/download/1.0/pulsefm_with_intro.mp3" preload="auto"></audio>
+
+    <script>
+        const introAudio = document.getElementById('intro-audio');
+        const radioAudio = document.getElementById('radio-audio');
+        const playBtn = document.getElementById('play-btn');
+        const radioBox = document.getElementById('radio-box');
+        const statusText = document.getElementById('status-text');
+        const volumeKnob = document.getElementById('volume-knob');
+        const volMarker = document.getElementById('vol-marker');
+
+        let isPlaying = false;
+
+        // Gestione sequenza: Intro "Welcome to Algorhythm" -> Parte in automatico PulseFM
+        playBtn.addEventListener('click', () => {
+            if (!isPlaying) {
+                introAudio.play().then(() => {
+                    isPlaying = true;
+                    radioBox.classList.add('playing');
+                    statusText.textContent = "ALGORHYTHM INTRO...";
+                }).catch(err => {
+                    console.error("Errore riproduzione intro:", err);
+                    // Fallback diretto alla radio se l'intro non è ancora caricata
+                    startRadioStream();
+                });
+
+                // Quando l'intro finisce, parte subito la radio principale
+                introAudio.onended = () => {
+                    startRadioStream();
+                };
+
+            } else {
+                introAudio.pause();
+                introAudio.currentTime = 0;
+                radioAudio.pause();
+                isPlaying = false;
+                radioBox.classList.remove('playing');
+                statusText.textContent = "IN PAUSA";
+            }
+        });
+
+        function startRadioStream() {
+            if (!isPlaying) return;
+            radioAudio.play().then(() => {
+                statusText.textContent = "PULSEFM LIVE 107.5";
+            }).catch(err => {
+                console.error("Errore streaming radio:", err);
+            });
+        }
+
+        // Controllo interattivo volume
+        let currentVolume = 0.8;
+        introAudio.volume = currentVolume;
+        radioAudio.volume = currentVolume;
+
+        volumeKnob.addEventListener('click', () => {
+            currentVolume = (currentVolume >= 1.0) ? 0.2 : currentVolume + 0.2;
+            introAudio.volume = currentVolume;
+            radioAudio.volume = currentVolume;
+            const deg = (currentVolume * 270) - 135;
+            volMarker.style.transform = `translateX(-50%) rotate(${deg}deg)`;
+            statusText.textContent = `VOLUME: ${Math.round(currentVolume * 100)}%`;
+            setTimeout(() => {
+                if(isPlaying) statusText.textContent = "PULSEFM LIVE 107.5";
+            }, 1200);
+        });
+    </script>
+</body>
+</html>
