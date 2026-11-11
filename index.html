@@ -317,11 +317,10 @@
         </div>
     </div>
 
-    <!-- Elemento audio unico dinamico -->
     <audio id="main-audio"></audio>
 
     <script>
-        // CONFIGURAZIONE DELLE STAZIONI CON I LINK RAW DI GITHUB
+        // CONFIGURAZIONE DELLE STAZIONI CON I NOMI REALI DEI FILE SU GITHUB
         const stations = {
             pulsefm: {
                 name: "PULSEFM (Pop Inglese)",
@@ -335,14 +334,14 @@
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/jingles/5.mp3"
                 ],
                 songs: [
-                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/1.mp3",
-                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/2.mp3",
-                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/3.mp3",
-                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/4.mp3",
-                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/5.mp3",
-                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/6.mp3",
-                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/7.mp3",
-                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/8.mp3"
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/Broken%20Ones.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/Carry%20All%20The%20Weight.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/Feel%20Alright.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/Good%20Tonight.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/High.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/Only%20For%20Show.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/Spinning%20Like%20A%20Top.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/That's%20the%20Song%20I%20Sing.mp3"
                 ]
             },
             reggaeton: {
@@ -362,13 +361,14 @@
                 ],
                 songs: [
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Algo%20Que%20Decirte.mp3",
-                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/A%5C303%5C272n.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/A%C3%AAn.mp3",
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Bailamos%20Lento.mp3",
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Dime%20que%20vas%20a%20hacer.mp3",
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Escuela%20Secundaria.mp3",
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Linda%20y%20Libre.mp3",
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Mala%20de%20mente.mp3",
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/No%20Te%20Hagas%20El%20Importante.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/No%20Vas%20A%20Ser%20F%C3%A1cil.mp3",
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Toma.mp3"
                 ]
             }
@@ -389,13 +389,12 @@
 
         let currentKey = 'pulsefm';
         let isPlaying = false;
-        let playState = 'stopped'; // 'intro', 'jingle', 'song'
+        let playState = 'stopped';
 
         function getRandomItem(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
 
-        // Funzione per cambiare stazione
         function toggleStation() {
             currentKey = (currentKey === 'pulsefm') ? 'reggaeton' : 'pulsefm';
             const st = stations[currentKey];
@@ -411,7 +410,6 @@
         tuningKnob.addEventListener('click', toggleStation);
         document.getElementById('station-display').addEventListener('click', toggleStation);
 
-        // Gestione riproduzione dinamica a catena (Intro -> Jingle -> Canzone -> Jingle -> Canzone...)
         playBtn.addEventListener('click', () => {
             if (!isPlaying) {
                 isPlaying = true;
@@ -435,18 +433,14 @@
             currentTrackInfo.textContent = "PRONTO";
         }
 
-        // Quando finisce un brano, decide cosa riprodurre dopo in modo casuale
         audio.onended = () => {
             if (!isPlaying) return;
 
             if (playState === 'intro') {
-                // Finito l'intro generale, parte un jingle della stazione attiva
                 playNextDynamic();
             } else if (playState === 'jingle') {
-                // Finito il jingle, parte una canzone casuale
                 playRandomSong();
             } else if (playState === 'song') {
-                // Finita la canzone, c'è il 50% di probabilità di inserire un jingle o passare a un'altra canzone
                 if (Math.random() > 0.5) {
                     playRandomJingle();
                 } else {
@@ -479,7 +473,6 @@
             currentTrackInfo.textContent = "IN ONDA";
         }
 
-        // Volume
         let currentVolume = 0.8;
         audio.volume = currentVolume;
 
