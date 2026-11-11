@@ -380,8 +380,35 @@
         let displayTimeout = null;
         let lastTrackText = "";
 
-        function getRandomItem(arr) {
-            return arr[Math.floor(Math.random() * arr.length)];
+        // STRUTTURE CODA (SHUFFLED DECKS)
+        let songPools = { pulsefm: [], reggaeton: [] };
+        let jinglePools = { pulsefm: [], reggaeton: [] };
+
+        // Algoritmo di mescolamento Fisher-Yates
+        function shuffleArray(arr) {
+            const array = [...arr];
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Pesca un elemento non ripetuto dal mazzo
+        function getNextFromPool(type, stationKey) {
+            let pool = (type === 'song') ? songPools[stationKey] : jinglePools[stationKey];
+            const source = (type === 'song') ? stations[stationKey].songs : stations[stationKey].jingles;
+
+            if (!pool || pool.length === 0) {
+                pool = shuffleArray(source);
+            }
+
+            const selected = pool.shift(); // Estrae e rimuove il primo elemento
+
+            if (type === 'song') songPools[stationKey] = pool;
+            else jinglePools[stationKey] = pool;
+
+            return selected;
         }
 
         function getSongTitle(url) {
@@ -401,7 +428,7 @@
             tunerNeedle.style.left = st.freq;
             
             clearTimeout(displayTimeout);
-            lastTrackText = st.name; // Mostra temporaneamente la stazione solo al cambio tuning
+            lastTrackText = st.name;
             currentTrackInfo.textContent = st.name;
 
             if (isPlaying) {
@@ -456,24 +483,20 @@
 
         function playRandomJingle() {
             playState = 'jingle';
-            const st = stations[currentKey];
-            const jingleUrl = getRandomItem(st.jingles);
+            const jingleUrl = getNextFromPool('jingle', currentKey);
             audio.src = jingleUrl;
             audio.play().catch(e => console.log(e));
             
-            // Durante il jingle lo schermo resta completamente pulito
             lastTrackText = "";
             currentTrackInfo.textContent = "";
         }
 
         function playRandomSong() {
             playState = 'song';
-            const st = stations[currentKey];
-            const songUrl = getRandomItem(st.songs);
+            const songUrl = getNextFromPool('song', currentKey);
             audio.src = songUrl;
             audio.play().catch(e => console.log(e));
             
-            // Durante la canzone compare il titolo pulito
             const title = getSongTitle(songUrl);
             lastTrackText = title;
             currentTrackInfo.textContent = title;
