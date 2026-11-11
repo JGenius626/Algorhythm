@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Algorhythm</title>
+    <title>Algorhythm - Dynamic Multi-Station Radio</title>
     <style>
         * {
             box-sizing: border-box;
@@ -22,7 +22,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Contenitore principale radio */
         .radio-container {
             position: relative;
             width: 750px;
@@ -40,7 +39,6 @@
             justify-content: space-between;
         }
 
-        /* Neon esterno che incornicia la radio */
         .radio-container::before {
             content: '';
             position: absolute;
@@ -52,7 +50,6 @@
             opacity: 0.8;
         }
 
-        /* Antenna superiore */
         .antenna {
             position: absolute;
             top: -110px;
@@ -77,14 +74,12 @@
             box-shadow: 0 0 15px #ffaa00, 0 0 30px #ffaa00;
         }
 
-        /* Pannello superiore/centrale */
         .main-panel {
             display: flex;
             gap: 25px;
             height: 230px;
         }
 
-        /* Sezione Speaker a sinistra */
         .speaker-section {
             flex: 1.1;
             background: #090a10;
@@ -98,7 +93,6 @@
             box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
         }
 
-        /* Griglia linee orizzontali speaker */
         .speaker-grille {
             position: absolute;
             width: 100%;
@@ -112,7 +106,6 @@
             );
         }
 
-        /* Cerchio neon centrale speaker */
         .speaker-neon-circle {
             width: 160px;
             height: 160px;
@@ -123,7 +116,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Display Frequenze a destra */
         .tuner-section {
             flex: 1.3;
             background: #05060a;
@@ -137,6 +129,7 @@
             color: #ffaa00;
             font-family: monospace;
             position: relative;
+            cursor: pointer;
         }
 
         .tuner-scales {
@@ -145,14 +138,6 @@
             font-size: 0.85rem;
             font-weight: bold;
             text-shadow: 0 0 8px #ffaa00;
-        }
-
-        .tuner-numbers {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: #ffcc66;
-            padding: 0 5px;
         }
 
         .tuner-line-container {
@@ -164,10 +149,9 @@
             align-items: center;
         }
 
-        /* Indicatore frequenza verticale */
         .tuner-needle {
             position: absolute;
-            left: 58%; /* Posizionato su 107.5 MHz */
+            left: 58%;
             width: 4px;
             height: 30px;
             background: #ff0055;
@@ -176,7 +160,6 @@
             transition: left 0.5s ease;
         }
 
-        /* Sezione inferiore: manopole e speaker indicator */
         .bottom-panel {
             display: flex;
             justify-content: space-between;
@@ -199,7 +182,6 @@
             text-shadow: 0 0 8px #00f3ff;
         }
 
-        /* Manopole metalliche con neon */
         .knob {
             width: 70px;
             height: 70px;
@@ -235,7 +217,6 @@
             box-shadow: 0 0 6px #00f3ff;
         }
 
-        /* Equalizzatore centrale inferiore (tre barre neon) */
         .eq-center-bars {
             display: flex;
             gap: 10px;
@@ -254,10 +235,8 @@
             background: #ff9900;
             border-radius: 4px;
             box-shadow: 0 0 10px #ff9900;
-            transition: height 0.2s ease;
         }
 
-        /* Stato attivo riproduzione */
         .playing .eq-bar:nth-child(1) { animation: bounce 0.6s infinite alternate; }
         .playing .eq-bar:nth-child(2) { animation: bounce 0.4s infinite alternate; }
         .playing .eq-bar:nth-child(3) { animation-delay: 0.2s; animation: bounce 0.5s infinite alternate; }
@@ -285,37 +264,30 @@
 <body>
 
     <div class="radio-container" id="radio-box">
-        <!-- Antenna -->
         <div class="antenna"></div>
         <div class="antenna-tip"></div>
 
-        <!-- Pannello Principale -->
         <div class="main-panel">
-            <!-- Speaker -->
             <div class="speaker-section">
                 <div class="speaker-grille"></div>
                 <div class="speaker-neon-circle"></div>
             </div>
 
-            <!-- Display Frequenze -->
-            <div class="tuner-section">
+            <div class="tuner-section" id="station-display" title="Clicca per cambiare stazione">
                 <div class="tuner-scales">
-                    <span>FM</span>
-                    <span>88 92 96 100 104 108 MHz</span>
+                    <span id="station-name-tag">STAZIONE CORRENTE</span>
+                    <span>FM 88 - 108 MHz</span>
                 </div>
                 <div class="tuner-line-container">
-                    <div class="tuner-needle"></div>
+                    <div class="tuner-needle" id="tuner-needle"></div>
                 </div>
                 <div class="tuner-scales">
-                    <span>AM</span>
-                    <span>530 700 900 1200 1600 kHz</span>
+                    <span id="current-track-info" style="font-size: 0.7rem; color: #ff007f;">PRONTO</span>
                 </div>
             </div>
         </div>
 
-        <!-- Pannello Inferiore (Manopole e Play) -->
         <div class="bottom-panel">
-            <!-- Manopola Volume -->
             <div class="control-group">
                 <span class="control-label">VOLUME</span>
                 <div class="knob" id="volume-knob" title="Regola Volume">
@@ -325,9 +297,8 @@
                 </div>
             </div>
 
-            <!-- Pulsante Play / Pause Centrale (Equalizzatore) -->
             <div class="control-group">
-                <div class="eq-center-bars" id="play-btn" title="Clicca per Avviare/Pausa Radio">
+                <div class="eq-center-bars" id="play-btn" title="Accendi / Spegni">
                     <div class="eq-bar"></div>
                     <div class="eq-bar"></div>
                     <div class="eq-bar"></div>
@@ -335,10 +306,9 @@
                 <span class="play-hint" id="status-text">CLICCA PER ACCENDERE</span>
             </div>
 
-            <!-- Manopola Tuning -->
             <div class="control-group">
                 <span class="control-label">TUNING</span>
-                <div class="knob" id="tuning-knob" title="PulseFM 107.5 MHz">
+                <div class="knob" id="tuning-knob" title="Cambia Stazione">
                     <div class="knob-inner">
                         <div class="knob-marker"></div>
                     </div>
@@ -347,72 +317,180 @@
         </div>
     </div>
 
-    <!-- AUDIO SEPARATI: Intro Algorhythm + Streaming Radio Principale -->
-    <audio id="intro-audio" src="" preload="auto"></audio>
-    <audio id="radio-audio" src="https://github.com/JGenius626/Algorhythm/releases/download/1.0/pulsefm_with_intro.mp3" preload="auto"></audio>
+    <!-- Elemento audio unico dinamico -->
+    <audio id="main-audio"></audio>
 
     <script>
-        const introAudio = document.getElementById('intro-audio');
-        const radioAudio = document.getElementById('radio-audio');
+        // CONFIGURAZIONE DELLE STAZIONI CON I LINK RAW DI GITHUB
+        const stations = {
+            pulsefm: {
+                name: "PULSEFM (Pop Inglese)",
+                freq: "58%",
+                jingles: [
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/jingles/intro.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/jingles/1.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/jingles/2.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/jingles/3.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/jingles/4.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/jingles/5.mp3"
+                ],
+                songs: [
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/1.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/2.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/3.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/4.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/5.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/6.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/7.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/songs/8.mp3"
+                ]
+            },
+            reggaeton: {
+                name: "NEON REGGAETON",
+                freq: "25%",
+                jingles: [
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/jingles/intro.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/jingles/1.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/jingles/2.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/jingles/3.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/jingles/4.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/jingles/5.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/jingles/7.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/jingles/8.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/jingles/9.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/jingles/10.mp3"
+                ],
+                songs: [
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Algo%20Que%20Decirte.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/A%5C303%5C272n.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Bailamos%20Lento.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Dime%20que%20vas%20a%20hacer.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Escuela%20Secundaria.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Linda%20y%20Libre.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Mala%20de%20mente.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/No%20Te%20Hagas%20El%20Importante.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Toma.mp3"
+                ]
+            }
+        };
+
+        const generalIntro = "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/intro.mp3";
+
+        const audio = document.getElementById('main-audio');
         const playBtn = document.getElementById('play-btn');
         const radioBox = document.getElementById('radio-box');
         const statusText = document.getElementById('status-text');
+        const stationNameTag = document.getElementById('station-name-tag');
+        const currentTrackInfo = document.getElementById('current-track-info');
+        const tunerNeedle = document.getElementById('tuner-needle');
+        const tuningKnob = document.getElementById('tuning-knob');
         const volumeKnob = document.getElementById('volume-knob');
         const volMarker = document.getElementById('vol-marker');
 
+        let currentKey = 'pulsefm';
         let isPlaying = false;
+        let playState = 'stopped'; // 'intro', 'jingle', 'song'
 
-        // Gestione sequenza: Intro "Welcome to Algorhythm" -> Parte in automatico PulseFM
+        function getRandomItem(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        // Funzione per cambiare stazione
+        function toggleStation() {
+            currentKey = (currentKey === 'pulsefm') ? 'reggaeton' : 'pulsefm';
+            const st = stations[currentKey];
+            stationNameTag.textContent = st.name;
+            tunerNeedle.style.left = st.freq;
+            statusText.textContent = `STAZIONE: ${st.name}`;
+            
+            if (isPlaying) {
+                playNextDynamic();
+            }
+        }
+
+        tuningKnob.addEventListener('click', toggleStation);
+        document.getElementById('station-display').addEventListener('click', toggleStation);
+
+        // Gestione riproduzione dinamica a catena (Intro -> Jingle -> Canzone -> Jingle -> Canzone...)
         playBtn.addEventListener('click', () => {
             if (!isPlaying) {
-                introAudio.play().then(() => {
-                    isPlaying = true;
-                    radioBox.classList.add('playing');
-                    statusText.textContent = "ALGORHYTHM INTRO...";
-                }).catch(err => {
-                    console.error("Errore riproduzione intro:", err);
-                    // Fallback diretto alla radio se l'intro non è ancora caricata
-                    startRadioStream();
-                });
-
-                // Quando l'intro finisce, parte subito la radio principale
-                introAudio.onended = () => {
-                    startRadioStream();
-                };
-
+                isPlaying = true;
+                radioBox.classList.add('playing');
+                playState = 'intro';
+                statusText.textContent = "ALGORHYTHM INTRO...";
+                audio.src = generalIntro;
+                audio.play().catch(e => console.log(e));
             } else {
-                introAudio.pause();
-                introAudio.currentTime = 0;
-                radioAudio.pause();
-                isPlaying = false;
-                radioBox.classList.remove('playing');
-                statusText.textContent = "IN PAUSA";
+                stopRadio();
             }
         });
 
-        function startRadioStream() {
-            if (!isPlaying) return;
-            radioAudio.play().then(() => {
-                statusText.textContent = "PULSEFM LIVE 107.5";
-            }).catch(err => {
-                console.error("Errore streaming radio:", err);
-            });
+        function stopRadio() {
+            audio.pause();
+            audio.currentTime = 0;
+            isPlaying = false;
+            playState = 'stopped';
+            radioBox.classList.remove('playing');
+            statusText.textContent = "IN PAUSA";
+            currentTrackInfo.textContent = "PRONTO";
         }
 
-        // Controllo interattivo volume
+        // Quando finisce un brano, decide cosa riprodurre dopo in modo casuale
+        audio.onended = () => {
+            if (!isPlaying) return;
+
+            if (playState === 'intro') {
+                // Finito l'intro generale, parte un jingle della stazione attiva
+                playNextDynamic();
+            } else if (playState === 'jingle') {
+                // Finito il jingle, parte una canzone casuale
+                playRandomSong();
+            } else if (playState === 'song') {
+                // Finita la canzone, c'è il 50% di probabilità di inserire un jingle o passare a un'altra canzone
+                if (Math.random() > 0.5) {
+                    playRandomJingle();
+                } else {
+                    playRandomSong();
+                }
+            }
+        };
+
+        function playNextDynamic() {
+            playRandomJingle();
+        }
+
+        function playRandomJingle() {
+            playState = 'jingle';
+            const st = stations[currentKey];
+            const jingleUrl = getRandomItem(st.jingles);
+            audio.src = jingleUrl;
+            audio.play().catch(e => console.log(e));
+            statusText.textContent = `${st.name} [JINGLE]`;
+            currentTrackInfo.textContent = "STATION ID";
+        }
+
+        function playRandomSong() {
+            playState = 'song';
+            const st = stations[currentKey];
+            const songUrl = getRandomItem(st.songs);
+            audio.src = songUrl;
+            audio.play().catch(e => console.log(e));
+            statusText.textContent = st.name;
+            currentTrackInfo.textContent = "IN ONDA";
+        }
+
+        // Volume
         let currentVolume = 0.8;
-        introAudio.volume = currentVolume;
-        radioAudio.volume = currentVolume;
+        audio.volume = currentVolume;
 
         volumeKnob.addEventListener('click', () => {
             currentVolume = (currentVolume >= 1.0) ? 0.2 : currentVolume + 0.2;
-            introAudio.volume = currentVolume;
-            radioAudio.volume = currentVolume;
+            audio.volume = currentVolume;
             const deg = (currentVolume * 270) - 135;
             volMarker.style.transform = `translateX(-50%) rotate(${deg}deg)`;
             statusText.textContent = `VOLUME: ${Math.round(currentVolume * 100)}%`;
             setTimeout(() => {
-                if(isPlaying) statusText.textContent = "PULSEFM LIVE 107.5";
+                if (isPlaying) statusText.textContent = stations[currentKey].name;
             }, 1200);
         });
     </script>
