@@ -376,7 +376,7 @@
 
         let currentKey = 'pulsefm';
         let isPlaying = false;
-        let playState = 'stopped'; // 'intro', 'jingle', 'song'
+        let playState = 'stopped';
         let displayTimeout = null;
         let lastTrackText = "";
 
@@ -401,7 +401,7 @@
             tunerNeedle.style.left = st.freq;
             
             clearTimeout(displayTimeout);
-            lastTrackText = st.name;
+            lastTrackText = st.name; // Mostra temporaneamente la stazione solo al cambio tuning
             currentTrackInfo.textContent = st.name;
 
             if (isPlaying) {
@@ -438,18 +438,14 @@
             lastTrackText = "";
         }
 
-        // LOGICA DI ROTAZIONE CONTINUA A CATENA (Intro -> Jingle -> Canzone -> Jingle -> Canzone...)
         audio.onended = () => {
             if (!isPlaying) return;
 
             if (playState === 'intro') {
-                // Finito l'intro generale, parte un jingle della stazione attiva
                 playRandomJingle();
             } else if (playState === 'jingle') {
-                // Finito il jingle, parte sempre una canzone casuale
                 playRandomSong();
             } else if (playState === 'song') {
-                // Finita la canzone, parte SEMPRE un jingle casuale prima della prossima canzone (stile radio reale)
                 playRandomJingle();
             }
         };
@@ -464,8 +460,10 @@
             const jingleUrl = getRandomItem(st.jingles);
             audio.src = jingleUrl;
             audio.play().catch(e => console.log(e));
-            lastTrackText = st.name;
-            currentTrackInfo.textContent = st.name;
+            
+            // Durante il jingle lo schermo resta completamente pulito
+            lastTrackText = "";
+            currentTrackInfo.textContent = "";
         }
 
         function playRandomSong() {
@@ -474,6 +472,8 @@
             const songUrl = getRandomItem(st.songs);
             audio.src = songUrl;
             audio.play().catch(e => console.log(e));
+            
+            // Durante la canzone compare il titolo pulito
             const title = getSongTitle(songUrl);
             lastTrackText = title;
             currentTrackInfo.textContent = title;
