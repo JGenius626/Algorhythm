@@ -272,7 +272,7 @@
                     <div class="tuner-needle" id="tuner-needle"></div>
                 </div>
                 <div class="tuner-scales">
-                    <span id="current-track-info" style="font-size: 0.75rem; color: #ff007f; text-shadow: 0 0 8px #ff007f;">PRONTO</span>
+                    <span id="current-track-info" style="font-size: 0.75rem; color: #ff007f; text-shadow: 0 0 8px #ff007f;"></span>
                 </div>
             </div>
         </div>
@@ -378,6 +378,7 @@
         let isPlaying = false;
         let playState = 'stopped';
         let displayTimeout = null;
+        let lastTrackText = ""; // Memorizza cosa c'era in onda prima del volume
 
         function getRandomItem(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
@@ -389,7 +390,7 @@
                 const filename = decoded.substring(decoded.lastIndexOf('/') + 1);
                 return filename.replace('.mp3', '').toUpperCase();
             } catch (e) {
-                return "IN ONDA";
+                return "";
             }
         }
 
@@ -400,13 +401,14 @@
             tunerNeedle.style.left = st.freq;
             
             clearTimeout(displayTimeout);
-            currentTrackInfo.textContent = st.name; // Mostra solo il nome della stazione
+            lastTrackText = st.name;
+            currentTrackInfo.textContent = st.name;
 
             if (isPlaying) {
                 playNextDynamic();
             } else {
                 displayTimeout = setTimeout(() => {
-                    currentTrackInfo.textContent = "PRONTO";
+                    currentTrackInfo.textContent = "";
                 }, 2000);
             }
         }
@@ -418,7 +420,7 @@
                 isPlaying = true;
                 radioBox.classList.add('playing');
                 playState = 'intro';
-                currentTrackInfo.textContent = "ALGORHYTHM INTRO...";
+                currentTrackInfo.textContent = ""; // Schermo pulito durante l'intro generale
                 audio.src = generalIntro;
                 audio.play().catch(e => console.log(e));
             } else {
@@ -432,7 +434,8 @@
             isPlaying = false;
             playState = 'stopped';
             radioBox.classList.remove('playing');
-            currentTrackInfo.textContent = "PRONTO";
+            currentTrackInfo.textContent = "";
+            lastTrackText = "";
         }
 
         audio.onended = () => {
@@ -461,7 +464,8 @@
             const jingleUrl = getRandomItem(st.jingles);
             audio.src = jingleUrl;
             audio.play().catch(e => console.log(e));
-            currentTrackInfo.textContent = st.name; // Mostra solo il nome della stazione durante il jingle
+            lastTrackText = st.name;
+            currentTrackInfo.textContent = st.name;
         }
 
         function playRandomSong() {
@@ -470,7 +474,9 @@
             const songUrl = getRandomItem(st.songs);
             audio.src = songUrl;
             audio.play().catch(e => console.log(e));
-            currentTrackInfo.textContent = getSongTitle(songUrl); // Mostra il titolo della canzone
+            const title = getSongTitle(songUrl);
+            lastTrackText = title;
+            currentTrackInfo.textContent = title;
         }
 
         let currentVolume = 0.8;
@@ -487,14 +493,10 @@
             
             displayTimeout = setTimeout(() => {
                 if (isPlaying) {
-                    if (playState === 'song') {
-                        // Ripristina l'ultimo stato (se era canzone, mostrava il titolo, ma qui per semplicità rimettiamo il nome stazione o attende il prossimo aggiornamento, oppure gestiamo lo stato corrente)
-                        currentTrackInfo.textContent = stations[currentKey].name;
-                    } else {
-                        currentTrackInfo.textContent = stations[currentKey].name;
-                    }
+                    // Ripristina esattamente l'ultimo testo riprodotto (che sia la canzone o il nome stazione)
+                    currentTrackInfo.textContent = lastTrackText;
                 } else {
-                    currentTrackInfo.textContent = "PRONTO";
+                    currentTrackInfo.textContent = "";
                 }
             }, 1500);
         });
