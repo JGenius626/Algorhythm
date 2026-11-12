@@ -31,6 +31,13 @@
             overflow: hidden;
         }
 
+        button, .knob, .station-btn {
+            /* Impedisce al browser di mostrare comportamenti strani o tooltip di sistema */
+            outline: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
         .radio-container {
             position: relative;
             width: 840px;
@@ -511,7 +518,7 @@
             <div class="left-controls">
                 <div class="control-group">
                     <span class="control-label">POWER</span>
-                    <div class="power-btn-square" id="play-btn" title="Accendi / Spegni">
+                    <div class="power-btn-square" id="play-btn">
                         <div class="eq-bar-mini"></div>
                         <div class="eq-bar-mini"></div>
                         <div class="eq-bar-mini"></div>
@@ -520,7 +527,7 @@
 
                 <div class="control-group">
                     <span class="control-label">VOLUME</span>
-                    <div class="knob" id="volume-knob" title="Regola Volume">
+                    <div class="knob" id="volume-knob">
                         <div class="knob-inner">
                             <div class="knob-marker" id="vol-marker"></div>
                         </div>
@@ -531,7 +538,7 @@
             <div class="right-controls">
                 <div class="control-group">
                     <span class="control-label">PULSEFM</span>
-                    <div class="knob station-btn active-station" data-station="pulsefm" title="Sintonizza PulseFM">
+                    <div class="knob station-btn active-station" data-station="pulsefm">
                         <div class="knob-inner">
                             <div class="knob-marker"></div>
                         </div>
@@ -540,7 +547,7 @@
 
                 <div class="control-group">
                     <span class="control-label">NEON<br>REGGAETON</span>
-                    <div class="knob station-btn" data-station="reggaeton" title="Sintonizza Neon Reggaeton">
+                    <div class="knob station-btn" data-station="reggaeton">
                         <div class="knob-inner">
                             <div class="knob-marker"></div>
                         </div>
@@ -549,7 +556,7 @@
 
                 <div class="control-group">
                     <span class="control-label">HAZE WAVE</span>
-                    <div class="knob station-btn" data-station="hazewave" title="Sintonizza Haze Wave">
+                    <div class="knob station-btn" data-station="hazewave">
                         <div class="knob-inner">
                             <div class="knob-marker"></div>
                         </div>
