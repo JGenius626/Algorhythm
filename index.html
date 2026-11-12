@@ -173,13 +173,13 @@
         .bottom-panel {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-end;
             padding: 0 10px;
         }
 
         .left-controls, .right-controls {
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             gap: 20px;
         }
 
@@ -187,6 +187,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: flex-end;
             gap: 6px;
         }
 
@@ -198,7 +199,11 @@
             text-shadow: 0 0 6px rgba(138, 43, 226, 0.5);
             text-align: center;
             line-height: 1.1;
-            width: 75px; /* Spazio controllato per gestire il testo a capo ordinatamente */
+            width: 75px;
+            height: 26px; /* Altezza fissa uniformata per pareggiare le righe di testo */
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
             transition: color 0.3s ease;
         }
 
@@ -374,7 +379,6 @@
                 </div>
 
                 <div class="control-group">
-                    <!-- Testo mandato a capo con il tag <br> -->
                     <span class="control-label">NEON<br>REGGAETON</span>
                     <div class="knob station-btn" data-station="reggaeton" title="Sintonizza Neon Reggaeton">
                         <div class="knob-inner">
