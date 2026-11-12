@@ -196,6 +196,9 @@
             letter-spacing: 1.2px;
             color: #8a2be2;
             text-shadow: 0 0 6px rgba(138, 43, 226, 0.5);
+            text-align: center;
+            line-height: 1.1;
+            width: 75px; /* Spazio controllato per gestire il testo a capo ordinatamente */
             transition: color 0.3s ease;
         }
 
@@ -223,7 +226,6 @@
             transform: scale(1.05);
         }
 
-        /* Manopole stazioni: attive solo a radio accesa */
         .radio-container.playing .station-btn.active-station {
             border-color: #39ff14;
             box-shadow: 0 0 15px #39ff14, inset 0 0 10px rgba(0,0,0,0.8);
@@ -261,7 +263,6 @@
             box-shadow: 0 0 6px #39ff14;
         }
 
-        /* Tasto power squadrato */
         .power-btn-square {
             width: 55px;
             height: 55px;
@@ -342,7 +343,6 @@
         </div>
 
         <div class="bottom-panel">
-            <!-- Controlli Sinistri: Power + Volume -->
             <div class="left-controls">
                 <div class="control-group">
                     <span class="control-label">POWER</span>
@@ -363,7 +363,6 @@
                 </div>
             </div>
 
-            <!-- Controlli Destri: Manopole Stazioni dedicate -->
             <div class="right-controls">
                 <div class="control-group">
                     <span class="control-label">PULSEFM</span>
@@ -375,7 +374,8 @@
                 </div>
 
                 <div class="control-group">
-                    <span class="control-label">REGGAETON</span>
+                    <!-- Testo mandato a capo con il tag <br> -->
+                    <span class="control-label">NEON<br>REGGAETON</span>
                     <div class="knob station-btn" data-station="reggaeton" title="Sintonizza Neon Reggaeton">
                         <div class="knob-inner">
                             <div class="knob-marker"></div>
@@ -554,7 +554,6 @@
 
                     playNextDynamic();
                 } else {
-                    // Se la radio è spenta, aggiorna solo la posizione logica senza accendere spie
                     tunerNeedle.style.left = st.freq;
                 }
             });
