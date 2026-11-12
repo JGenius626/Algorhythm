@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Algorhythm - VFD Spectrum Pro Edition</title>
+    <title>Algorhythm - VFD Spectrum Pro Locked Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -116,14 +116,14 @@
             transition: all 0.3s ease;
         }
 
-        /* Display VFD Pro */
+        /* Display VFD Pro con layout ad altezze rigidamente bloccate */
         .tuner-section {
             flex: 1.5;
             background: #040207;
             border-radius: 20px;
             border: 3px solid #3b1d6e;
             box-shadow: 0 0 15px rgba(138, 43, 226, 0.3), inset 0 0 15px rgba(0,0,0,0.9);
-            padding: 15px;
+            padding: 12px 15px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -161,6 +161,7 @@
             justify-content: space-between;
             font-size: 0.8rem;
             font-weight: bold;
+            height: 18px;
             z-index: 2;
         }
 
@@ -170,6 +171,7 @@
             justify-content: space-between;
             font-size: 0.65rem;
             padding: 0 4px;
+            height: 14px;
             z-index: 2;
             opacity: 0.55;
             transition: opacity 0.3s ease;
@@ -226,12 +228,12 @@
             box-shadow: 0 0 10px #39ff14;
         }
 
-        /* Analizzatore di spettro grafico fitto a tutto display */
+        /* Analizzatore di spettro grafico fitto a dimensione fissa */
         .vfd-spectrum-grid {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            height: 55px;
+            height: 42px;
             padding: 0 2px;
             z-index: 2;
             opacity: 0.15;
@@ -255,14 +257,23 @@
             box-shadow: 0 0 5px #39ff14;
         }
 
-        /* Animazioni multiple per creare il movimento organico dello spettro */
         .radio-container.playing .spec-bar:nth-child(odd)  { animation: specMoveA 0.35s infinite alternate; }
         .radio-container.playing .spec-bar:nth-child(even) { animation: specMoveB 0.50s infinite alternate; }
         .radio-container.playing .spec-bar:nth-child(3n)  { animation: specMoveC 0.40s infinite alternate; }
 
-        @keyframes specMoveA { 0% { height: 4px; } 100% { height: 42px; } }
-        @keyframes specMoveB { 0% { height: 8px; } 100% { height: 32px; } }
-        @keyframes specMoveC { 0% { height: 3px; } 100% { height: 48px; } }
+        @keyframes specMoveA { 0% { height: 4px; } 100% { height: 34px; } }
+        @keyframes specMoveB { 0% { height: 8px; } 100% { height: 26px; } }
+        @keyframes specMoveC { 0% { height: 3px; } 100% { height: 38px; } }
+
+        /* Box inferiore riservato al titolo della canzone con altezza bloccata */
+        .tuner-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 18px;
+            font-size: 0.75rem;
+            z-index: 2;
+        }
 
         .bottom-panel {
             display: flex;
@@ -427,7 +438,7 @@
                 <div class="speaker-neon-circle"></div>
             </div>
 
-            <!-- Display VFD Pro -->
+            <!-- Display VFD Pro con layout bloccato -->
             <div class="tuner-section" id="station-display">
                 <div class="tuner-header">
                     <span id="station-name-tag"></span>
@@ -444,10 +455,9 @@
                     <span>108 MHz</span>
                 </div>
 
-                <!-- Righello analogico con tacche millimetriche e cursore -->
+                <!-- Righello analogico con tacche e cursore -->
                 <div class="tuner-ruler">
                     <div class="tuner-needle" id="tuner-needle"></div>
-                    <!-- Tacche generate via HTML per la precisione visiva -->
                     <div class="ruler-tick major"></div>
                     <div class="ruler-tick"></div><div class="ruler-tick"></div><div class="ruler-tick"></div><div class="ruler-tick"></div>
                     <div class="ruler-tick major"></div>
@@ -461,7 +471,7 @@
                     <div class="ruler-tick major"></div>
                 </div>
 
-                <!-- Analizzatore di spettro grafico fitto -->
+                <!-- Analizzatore di spettro grafico -->
                 <div class="vfd-spectrum-grid">
                     <div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div>
                     <div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div>
@@ -472,8 +482,9 @@
                     <div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div>
                 </div>
 
-                <div class="tuner-header">
-                    <span id="current-track-info" style="font-size: 0.75rem;"></span>
+                <!-- Box inferiore del titolo traccia con altezza fissa protetta -->
+                <div class="tuner-footer">
+                    <span id="current-track-info"></span>
                 </div>
             </div>
         </div>
