@@ -150,7 +150,7 @@
 
         .tuner-needle {
             position: absolute;
-            left: 58%;
+            left: 25%;
             width: 4px;
             height: 30px;
             background: #ff0055;
@@ -265,7 +265,7 @@
 
             <div class="tuner-section" id="station-display">
                 <div class="tuner-scales">
-                    <span id="station-name-tag">PULSEFM</span>
+                    <span id="station-name-tag"></span>
                     <span>FM 88 - 108 MHz</span>
                 </div>
                 <div class="tuner-line-container">
@@ -309,7 +309,6 @@
     <audio id="main-audio"></audio>
 
     <script>
-        // CONFIGURAZIONE DELLE 3 STAZIONI (PULSEFM, NEON REGGAETON, HAZE WAVE)
         const stations = {
             pulsefm: {
                 name: "PULSEFM",
@@ -411,7 +410,6 @@
         let displayTimeout = null;
         let lastTrackText = "";
 
-        // Pool per il mazzo di carte (shuffled deck) per ogni stazione
         let songPools = { pulsefm: [], reggaeton: [], hazewave: [] };
         let jinglePools = { pulsefm: [], reggaeton: [], hazewave: [] };
 
@@ -450,7 +448,6 @@
             }
         }
 
-        // Cambio stazione ciclico tra le tre emittenti tramite il pomello Tuning
         function toggleStation() {
             currentStationIndex = (currentStationIndex + 1) % stationKeys.length;
             currentKey = stationKeys[currentStationIndex];
@@ -479,7 +476,12 @@
                 isPlaying = true;
                 radioBox.classList.add('playing');
                 playState = 'intro';
+                
+                // Accende la radio e mostra la stazione attiva in alto
+                const st = stations[currentKey];
+                stationNameTag.textContent = st.name;
                 currentTrackInfo.textContent = ""; 
+
                 audio.src = generalIntro;
                 audio.play().catch(e => console.log(e));
             } else {
@@ -493,6 +495,7 @@
             isPlaying = false;
             playState = 'stopped';
             radioBox.classList.remove('playing');
+            stationNameTag.textContent = ""; // Pulisce il nome della stazione in alto quando si spegne
             currentTrackInfo.textContent = "";
             lastTrackText = "";
         }
