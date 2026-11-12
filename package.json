@@ -16,7 +16,8 @@
     "win": {
       "target": "nsis",
       "icon": "icon.ico"
-    }
+    },
+    "forceCodeSigning": false
   },
   "devDependencies": {
     "electron": "^28.0.0",
