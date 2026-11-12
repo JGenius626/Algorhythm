@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Algorhythm - VFD Spectrum Edition</title>
+    <title>Algorhythm - VFD Spectrum Pro Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -24,7 +24,7 @@
 
         .radio-container {
             position: relative;
-            width: 840px; /* Leggermente più larga per dare respiro al display */
+            width: 840px;
             height: 420px;
             background: #0d0914;
             border-radius: 40px;
@@ -116,7 +116,7 @@
             transition: all 0.3s ease;
         }
 
-        /* Display VFD panoramico allargato a tutto campo */
+        /* Display VFD Pro */
         .tuner-section {
             flex: 1.5;
             background: #040207;
@@ -127,14 +127,13 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            color: #2a1b42;
+            color: #3b285c;
             font-family: monospace;
             position: relative;
             transition: all 0.3s ease;
             overflow: hidden;
         }
 
-        /* Effetto scanlines stile monitor VFD */
         .tuner-section::after {
             content: '';
             position: absolute;
@@ -172,49 +171,70 @@
             font-size: 0.65rem;
             padding: 0 4px;
             z-index: 2;
-            opacity: 0.4;
+            opacity: 0.55;
             transition: opacity 0.3s ease;
         }
 
         .radio-container.playing .frequency-scale-bar {
-            opacity: 0.9;
+            opacity: 0.95;
         }
 
-        .tuner-line-container {
+        /* Righello analogico con tacche millimetriche */
+        .tuner-ruler {
             position: relative;
-            height: 24px;
-            border-top: 2px dashed currentColor;
-            border-bottom: 2px dashed currentColor;
+            height: 16px;
             display: flex;
-            align-items: center;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 4px;
             z-index: 2;
+            opacity: 0.55;
+            transition: opacity 0.3s ease;
         }
 
+        .radio-container.playing .tuner-ruler {
+            opacity: 0.95;
+        }
+
+        .ruler-tick {
+            width: 1px;
+            background: currentColor;
+            height: 5px;
+        }
+
+        .ruler-tick.major {
+            height: 10px;
+            width: 2px;
+        }
+
+        /* Cursore lancetta verticale */
         .tuner-needle {
             position: absolute;
+            top: 2px;
             left: 25%;
-            width: 4px;
-            height: 22px;
+            width: 3px;
+            height: 18px;
             background: #2a1b42;
             transform: translateX(-50%);
             transition: left 0.5s ease, background 0.3s ease, box-shadow 0.3s ease;
             z-index: 3;
+            border-radius: 1px;
         }
 
         .radio-container.playing .tuner-needle {
             background: #39ff14;
-            box-shadow: 0 0 12px #39ff14;
+            box-shadow: 0 0 10px #39ff14;
         }
 
-        /* Equalizzatore a spettro grafico esteso a tutto il display */
+        /* Analizzatore di spettro grafico fitto a tutto display */
         .vfd-spectrum-grid {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            height: 45px;
-            padding: 0 5px;
+            height: 55px;
+            padding: 0 2px;
             z-index: 2;
-            opacity: 0.2;
+            opacity: 0.15;
             transition: opacity 0.3s ease;
         }
 
@@ -223,8 +243,8 @@
         }
 
         .spec-bar {
-            width: 6px;
-            height: 4px;
+            width: 3px;
+            height: 3px;
             background: #2a1b42;
             border-radius: 1px;
             transition: background 0.3s ease;
@@ -232,26 +252,17 @@
 
         .radio-container.playing .spec-bar {
             background: #39ff14;
-            box-shadow: 0 0 6px #39ff14;
+            box-shadow: 0 0 5px #39ff14;
         }
 
-        /* Animazioni stocastiche indipendenti per dare un effetto realistico da spettro audio */
-        .radio-container.playing .spec-bar:nth-child(1)  { animation: specMove1 0.45s infinite alternate; }
-        .radio-container.playing .spec-bar:nth-child(2)  { animation: specMove2 0.30s infinite alternate; }
-        .radio-container.playing .spec-bar:nth-child(3)  { animation: specMove3 0.55s infinite alternate; }
-        .radio-container.playing .spec-bar:nth-child(4)  { animation: specMove1 0.38s infinite alternate; }
-        .radio-container.playing .spec-bar:nth-child(5)  { animation: specMove2 0.62s infinite alternate; }
-        .radio-container.playing .spec-bar:nth-child(6)  { animation: specMove3 0.40s infinite alternate; }
-        .radio-container.playing .spec-bar:nth-child(7)  { animation: specMove1 0.50s infinite alternate; }
-        .radio-container.playing .spec-bar:nth-child(8)  { animation: specMove2 0.35s infinite alternate; }
-        .radio-container.playing .spec-bar:nth-child(9)  { animation: specMove3 0.48s infinite alternate; }
-        .radio-container.playing .spec-bar:nth-child(10) { animation: specMove1 0.58s infinite alternate; }
-        .radio-container.playing .spec-bar:nth-child(11) { animation: specMove2 0.32s infinite alternate; }
-        .radio-container.playing .spec-bar:nth-child(12) { animation: specMove3 0.42s infinite alternate; }
+        /* Animazioni multiple per creare il movimento organico dello spettro */
+        .radio-container.playing .spec-bar:nth-child(odd)  { animation: specMoveA 0.35s infinite alternate; }
+        .radio-container.playing .spec-bar:nth-child(even) { animation: specMoveB 0.50s infinite alternate; }
+        .radio-container.playing .spec-bar:nth-child(3n)  { animation: specMoveC 0.40s infinite alternate; }
 
-        @keyframes specMove1 { 0% { height: 6px; } 100% { height: 42px; } }
-        @keyframes specMove2 { 0% { height: 12px; } 100% { height: 35px; } }
-        @keyframes specMove3 { 0% { height: 4px; } 100% { height: 48px; } }
+        @keyframes specMoveA { 0% { height: 4px; } 100% { height: 42px; } }
+        @keyframes specMoveB { 0% { height: 8px; } 100% { height: 32px; } }
+        @keyframes specMoveC { 0% { height: 3px; } 100% { height: 48px; } }
 
         .bottom-panel {
             display: flex;
@@ -416,7 +427,7 @@
                 <div class="speaker-neon-circle"></div>
             </div>
 
-            <!-- Display VFD Panoramico con Frequenze Numeriche e Spettro Grafico -->
+            <!-- Display VFD Pro -->
             <div class="tuner-section" id="station-display">
                 <div class="tuner-header">
                     <span id="station-name-tag"></span>
@@ -433,24 +444,32 @@
                     <span>108 MHz</span>
                 </div>
 
-                <div class="tuner-line-container">
+                <!-- Righello analogico con tacche millimetriche e cursore -->
+                <div class="tuner-ruler">
                     <div class="tuner-needle" id="tuner-needle"></div>
+                    <!-- Tacche generate via HTML per la precisione visiva -->
+                    <div class="ruler-tick major"></div>
+                    <div class="ruler-tick"></div><div class="ruler-tick"></div><div class="ruler-tick"></div><div class="ruler-tick"></div>
+                    <div class="ruler-tick major"></div>
+                    <div class="ruler-tick"></div><div class="ruler-tick"></div><div class="ruler-tick"></div><div class="ruler-tick"></div>
+                    <div class="ruler-tick major"></div>
+                    <div class="ruler-tick"></div><div class="ruler-tick"></div><div class="ruler-tick"></div><div class="ruler-tick"></div>
+                    <div class="ruler-tick major"></div>
+                    <div class="ruler-tick"></div><div class="ruler-tick"></div><div class="ruler-tick"></div><div class="ruler-tick"></div>
+                    <div class="ruler-tick major"></div>
+                    <div class="ruler-tick"></div><div class="ruler-tick"></div><div class="ruler-tick"></div><div class="ruler-tick"></div>
+                    <div class="ruler-tick major"></div>
                 </div>
 
-                <!-- Analizzatore di spettro a barre multiple a tutto display -->
+                <!-- Analizzatore di spettro grafico fitto -->
                 <div class="vfd-spectrum-grid">
-                    <div class="spec-bar"></div>
-                    <div class="spec-bar"></div>
-                    <div class="spec-bar"></div>
-                    <div class="spec-bar"></div>
-                    <div class="spec-bar"></div>
-                    <div class="spec-bar"></div>
-                    <div class="spec-bar"></div>
-                    <div class="spec-bar"></div>
-                    <div class="spec-bar"></div>
-                    <div class="spec-bar"></div>
-                    <div class="spec-bar"></div>
-                    <div class="spec-bar"></div>
+                    <div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div>
+                    <div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div>
+                    <div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div>
+                    <div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div>
+                    <div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div>
+                    <div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div>
+                    <div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div><div class="spec-bar"></div>
                 </div>
 
                 <div class="tuner-header">
