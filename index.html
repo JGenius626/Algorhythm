@@ -309,10 +309,11 @@
     <audio id="main-audio"></audio>
 
     <script>
+        // CONFIGURAZIONE DELLE 3 STAZIONI (PULSEFM, NEON REGGAETON, HAZE WAVE)
         const stations = {
             pulsefm: {
                 name: "PULSEFM",
-                freq: "58%",
+                freq: "25%",
                 jingles: [
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/jingles/intro.mp3",
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/PulseFM/jingles/1.mp3",
@@ -334,7 +335,7 @@
             },
             reggaeton: {
                 name: "NEON REGGAETON",
-                freq: "25%",
+                freq: "58%",
                 jingles: [
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/jingles/intro.mp3",
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/jingles/1.mp3",
@@ -349,7 +350,7 @@
                 ],
                 songs: [
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Algo%20Que%20Decirte.mp3",
-                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Aun.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/A%C3%AAn.mp3",
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Bailamos%20Lento.mp3",
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Dime%20que%20vas%20a%20hacer.mp3",
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Escuela%20Secundaria.mp3",
@@ -358,6 +359,33 @@
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/No%20Te%20Hagas%20El%20Importante.mp3",
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/No%20Vas%20A%20Ser%20F%C3%A1cil.mp3",
                     "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Neon%20Reggaeton/songs/Toma.mp3"
+                ]
+            },
+            hazewave: {
+                name: "HAZE WAVE",
+                freq: "85%",
+                jingles: [
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/jingles/intro.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/jingles/1.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/jingles/2.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/jingles/3.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/jingles/4.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/jingles/5.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/jingles/6.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/jingles/7.mp3"
+                ],
+                songs: [
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/songs/Attention%20and%20Devotion.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/songs/Blackford.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/songs/Cattive%20Vibes.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/songs/Cielo%20Che%20Cambia%20Tono.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/songs/FUORI.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/songs/Hey,%20Hey,%20Hey.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/songs/Master%20in%20Psicologia.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/songs/Night%20Shift.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/songs/Sunday%20Light.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/songs/Trust%20The%20Process.mp3",
+                    "https://raw.githubusercontent.com/JGenius626/Algorhythm/main/Haze%20Wave/songs/You%20Don't%20Have%20To.mp3"
                 ]
             }
         };
@@ -374,17 +402,19 @@
         const volumeKnob = document.getElementById('volume-knob');
         const volMarker = document.getElementById('vol-marker');
 
+        let stationKeys = ['pulsefm', 'reggaeton', 'hazewave'];
+        let currentStationIndex = 0;
         let currentKey = 'pulsefm';
+
         let isPlaying = false;
         let playState = 'stopped';
         let displayTimeout = null;
         let lastTrackText = "";
 
-        // STRUTTURE CODA (SHUFFLED DECKS)
-        let songPools = { pulsefm: [], reggaeton: [] };
-        let jinglePools = { pulsefm: [], reggaeton: [] };
+        // Pool per il mazzo di carte (shuffled deck) per ogni stazione
+        let songPools = { pulsefm: [], reggaeton: [], hazewave: [] };
+        let jinglePools = { pulsefm: [], reggaeton: [], hazewave: [] };
 
-        // Algoritmo di mescolamento Fisher-Yates
         function shuffleArray(arr) {
             const array = [...arr];
             for (let i = array.length - 1; i > 0; i--) {
@@ -394,7 +424,6 @@
             return array;
         }
 
-        // Pesca un elemento non ripetuto dal mazzo
         function getNextFromPool(type, stationKey) {
             let pool = (type === 'song') ? songPools[stationKey] : jinglePools[stationKey];
             const source = (type === 'song') ? stations[stationKey].songs : stations[stationKey].jingles;
@@ -403,7 +432,7 @@
                 pool = shuffleArray(source);
             }
 
-            const selected = pool.shift(); // Estrae e rimuove il primo elemento
+            const selected = pool.shift();
 
             if (type === 'song') songPools[stationKey] = pool;
             else jinglePools[stationKey] = pool;
@@ -421,9 +450,12 @@
             }
         }
 
+        // Cambio stazione ciclico tra le tre emittenti tramite il pomello Tuning
         function toggleStation() {
-            currentKey = (currentKey === 'pulsefm') ? 'reggaeton' : 'pulsefm';
+            currentStationIndex = (currentStationIndex + 1) % stationKeys.length;
+            currentKey = stationKeys[currentStationIndex];
             const st = stations[currentKey];
+
             stationNameTag.textContent = st.name;
             tunerNeedle.style.left = st.freq;
             
