@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Algorhythm - VFD Italic Edition</title>
     <style>
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -22,6 +23,14 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        body, html {
+            background: transparent !important;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
         .radio-container {
             position: relative;
             width: 840px;
@@ -37,6 +46,9 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            
+            /* Di base blocchiamo il drag per rendere tutto cliccabile */
+            -webkit-app-region: no-drag; 
         }
 
         .radio-container::before {
@@ -91,6 +103,9 @@
             align-items: center;
             justify-content: center;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.95);
+
+            /* TRASCINABILE DALLA CASSA ACUSTICA */
+            -webkit-app-region: drag;
         }
 
         .speaker-grille {
@@ -639,6 +654,39 @@
         const volMarker = document.getElementById('vol-marker');
         const stationBtns = document.querySelectorAll('.station-btn');
 
+        // Configurazione per la chiusura tenendo premuto il POWER
+        const { ipcRenderer } = require('electron');
+        let powerTimer = null;
+        const holdDuration = 1500; // 1.5 secondi di pressione
+
+        playBtn.addEventListener('mousedown', () => {
+            // Se la radio è accesa, avvia il timer per la chiusura prolungata
+            powerTimer = setTimeout(() => {
+                // Effetto visivo di spegnimento totale prima di chiudere
+                radioBox.style.opacity = '0';
+                radioBox.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => {
+                    ipcRenderer.send('app-quit');
+                }, 500);
+            }, holdDuration);
+        });
+
+        playBtn.addEventListener('mouseup', () => {
+            // Se rilascia prima di 1.5 secondi, cancella il timer di chiusura
+            if (powerTimer) {
+                clearTimeout(powerTimer);
+                powerTimer = null;
+            }
+        });
+
+        playBtn.addEventListener('mouseleave', () => {
+            // Se il mouse esce dal bottone mentre tiene premuto, annulla la chiusura
+            if (powerTimer) {
+                clearTimeout(powerTimer);
+                powerTimer = null;
+            }
+        });
+
         let currentKey = 'pulsefm';
         let isPlaying = false;
         let playState = 'stopped';
@@ -774,17 +822,27 @@
             currentTrackInfo.textContent = title;
         }
 
-        let currentVolume = 0.8;
+        let currentVolume = 0.8; // Parte all'80%
         audio.volume = currentVolume;
 
         volumeKnob.addEventListener('click', () => {
-            currentVolume = (currentVolume >= 1.0) ? 0.2 : currentVolume + 0.2;
+            // Incrementa del 10% (0.1) e fa il ciclo se supera 1.0 (100%)
+            currentVolume += 0.1;
+            if (currentVolume > 1.001) {
+                currentVolume = 0.0;
+            }
+
             audio.volume = currentVolume;
+            
+            // Calcola i gradi della rotazione della manopola (-135° a +135°)
             const deg = (currentVolume * 270) - 135;
             volMarker.style.transform = `translateX(-50%) rotate(${deg}deg)`;
             
             clearTimeout(displayTimeout);
-            currentTrackInfo.textContent = `VOLUME: ${Math.round(currentVolume * 100)}%`;
+            
+            // Mostra la percentuale esatta a schermo (arrotondata per evitare decimali strani)
+            const volPercent = Math.round(currentVolume * 100);
+            currentTrackInfo.textContent = `VOLUME: ${volPercent}%`;
             
             displayTimeout = setTimeout(() => {
                 if (isPlaying) {
