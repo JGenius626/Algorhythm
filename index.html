@@ -24,7 +24,7 @@
 
         .radio-container {
             position: relative;
-            width: 750px;
+            width: 800px;
             height: 420px;
             background: #11131d;
             border-radius: 40px;
@@ -166,6 +166,12 @@
             padding: 0 10px;
         }
 
+        .left-controls, .right-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
         .control-group {
             display: flex;
             flex-direction: column;
@@ -174,30 +180,40 @@
         }
 
         .control-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 800;
-            letter-spacing: 1.5px;
+            letter-spacing: 1.2px;
             color: #00f3ff;
             text-shadow: 0 0 8px #00f3ff;
         }
 
         .knob {
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background: radial-gradient(circle, #ddd 30%, #444 80%);
-            border: 4px solid #00f3ff;
-            box-shadow: 0 0 15px #00f3ff, inset 0 0 10px rgba(0,0,0,0.8);
+            border: 3px solid #00f3ff;
+            box-shadow: 0 0 12px #00f3ff, inset 0 0 10px rgba(0,0,0,0.8);
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .knob:hover {
+            transform: scale(1.05);
+        }
+
+        .knob.active-station {
+            border-color: #ff007f;
+            box-shadow: 0 0 15px #ff007f, inset 0 0 10px rgba(0,0,0,0.8);
         }
 
         .knob-inner {
-            width: 50px;
-            height: 50px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             background: radial-gradient(circle, #555 20%, #111 90%);
             border: 2px solid #222;
@@ -206,39 +222,52 @@
 
         .knob-marker {
             position: absolute;
-            top: 4px;
+            top: 3px;
             left: 50%;
             width: 3px;
-            height: 14px;
+            height: 12px;
             background: #00f3ff;
             transform: translateX(-50%);
             border-radius: 2px;
             box-shadow: 0 0 6px #00f3ff;
         }
 
-        .eq-center-bars {
-            display: flex;
-            gap: 10px;
-            align-items: center;
+        .knob.active-station .knob-marker {
+            background: #ff007f;
+            box-shadow: 0 0 6px #ff007f;
+        }
+
+        /* Pulsante di accensione squadrato compatto */
+        .power-btn-square {
+            width: 55px;
+            height: 55px;
             background: #05060a;
-            padding: 10px 20px;
-            border-radius: 15px;
+            border-radius: 12px;
             border: 2px solid #ff9900;
-            box-shadow: 0 0 12px rgba(255,153,0,0.4);
+            box-shadow: 0 0 10px rgba(255,153,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .eq-bar {
-            width: 8px;
-            height: 28px;
+        .power-btn-square:hover {
+            transform: scale(1.05);
+        }
+
+        .eq-bar-mini {
+            width: 6px;
+            height: 22px;
             background: #ff9900;
-            border-radius: 4px;
-            box-shadow: 0 0 10px #ff9900;
+            border-radius: 3px;
+            box-shadow: 0 0 8px #ff9900;
+            margin: 0 2px;
         }
 
-        .playing .eq-bar:nth-child(1) { animation: bounce 0.6s infinite alternate; }
-        .playing .eq-bar:nth-child(2) { animation: bounce 0.4s infinite alternate; }
-        .playing .eq-bar:nth-child(3) { animation-delay: 0.2s; animation: bounce 0.5s infinite alternate; }
+        .playing .eq-bar-mini:nth-child(1) { animation: bounce 0.6s infinite alternate; }
+        .playing .eq-bar-mini:nth-child(2) { animation: bounce 0.4s infinite alternate; }
+        .playing .eq-bar-mini:nth-child(3) { animation-delay: 0.2s; animation: bounce 0.5s infinite alternate; }
 
         .playing .speaker-neon-circle {
             box-shadow: 0 0 25px #ffaa00, inset 0 0 20px #ffaa00;
@@ -246,8 +275,8 @@
         }
 
         @keyframes bounce {
-            0% { height: 10px; }
-            100% { height: 36px; }
+            0% { height: 8px; }
+            100% { height: 26px; }
         }
     </style>
 </head>
@@ -278,28 +307,53 @@
         </div>
 
         <div class="bottom-panel">
-            <div class="control-group">
-                <span class="control-label">VOLUME</span>
-                <div class="knob" id="volume-knob" title="Regola Volume">
-                    <div class="knob-inner">
-                        <div class="knob-marker" id="vol-marker"></div>
+            <!-- Blocco di Controllo Sinistro: Power + Volume -->
+            <div class="left-controls">
+                <div class="control-group">
+                    <span class="control-label">POWER</span>
+                    <div class="power-btn-square" id="play-btn" title="Accendi / Spegni">
+                        <div class="eq-bar-mini"></div>
+                        <div class="eq-bar-mini"></div>
+                        <div class="eq-bar-mini"></div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <span class="control-label">VOLUME</span>
+                    <div class="knob" id="volume-knob" title="Regola Volume">
+                        <div class="knob-inner">
+                            <div class="knob-marker" id="vol-marker"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="control-group">
-                <div class="eq-center-bars" id="play-btn" title="Accendi / Spegni">
-                    <div class="eq-bar"></div>
-                    <div class="eq-bar"></div>
-                    <div class="eq-bar"></div>
+            <!-- Blocco di Controllo Destro: Manopole Stazioni dedicate -->
+            <div class="right-controls">
+                <div class="control-group">
+                    <span class="control-label">PULSEFM</span>
+                    <div class="knob station-btn active-station" data-station="pulsefm" title="Sintonizza PulseFM">
+                        <div class="knob-inner">
+                            <div class="knob-marker"></div>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="control-group">
-                <span class="control-label">TUNING</span>
-                <div class="knob" id="tuning-knob" title="Cambia Stazione">
-                    <div class="knob-inner">
-                        <div class="knob-marker"></div>
+                <div class="control-group">
+                    <span class="control-label">REGGAETON</span>
+                    <div class="knob station-btn" data-station="reggaeton" title="Sintonizza Neon Reggaeton">
+                        <div class="knob-inner">
+                            <div class="knob-marker"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <span class="control-label">HAZE WAVE</span>
+                    <div class="knob station-btn" data-station="hazewave" title="Sintonizza Haze Wave">
+                        <div class="knob-inner">
+                            <div class="knob-marker"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -397,14 +451,11 @@
         const stationNameTag = document.getElementById('station-name-tag');
         const currentTrackInfo = document.getElementById('current-track-info');
         const tunerNeedle = document.getElementById('tuner-needle');
-        const tuningKnob = document.getElementById('tuning-knob');
         const volumeKnob = document.getElementById('volume-knob');
         const volMarker = document.getElementById('vol-marker');
+        const stationBtns = document.querySelectorAll('.station-btn');
 
-        let stationKeys = ['pulsefm', 'reggaeton', 'hazewave'];
-        let currentStationIndex = 0;
         let currentKey = 'pulsefm';
-
         let isPlaying = false;
         let playState = 'stopped';
         let displayTimeout = null;
@@ -448,28 +499,33 @@
             }
         }
 
-        function toggleStation() {
-            currentStationIndex = (currentStationIndex + 1) % stationKeys.length;
-            currentKey = stationKeys[currentStationIndex];
-            const st = stations[currentKey];
+        // Cambio stazione da manopole dedicate
+        stationBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetStation = btn.getAttribute('data-station');
+                
+                stationBtns.forEach(b => b.classList.remove('active-station'));
+                btn.classList.add('active-station');
 
-            stationNameTag.textContent = st.name;
-            tunerNeedle.style.left = st.freq;
-            
-            clearTimeout(displayTimeout);
-            lastTrackText = st.name;
-            currentTrackInfo.textContent = st.name;
+                currentKey = targetStation;
+                const st = stations[currentKey];
 
-            if (isPlaying) {
-                playNextDynamic();
-            } else {
-                displayTimeout = setTimeout(() => {
-                    currentTrackInfo.textContent = "";
-                }, 2000);
-            }
-        }
+                stationNameTag.textContent = st.name;
+                tunerNeedle.style.left = st.freq;
+                
+                clearTimeout(displayTimeout);
+                lastTrackText = st.name;
+                currentTrackInfo.textContent = st.name;
 
-        tuningKnob.addEventListener('click', toggleStation);
+                if (isPlaying) {
+                    playNextDynamic();
+                } else {
+                    displayTimeout = setTimeout(() => {
+                        currentTrackInfo.textContent = "";
+                    }, 2000);
+                }
+            });
+        });
 
         playBtn.addEventListener('click', () => {
             if (!isPlaying) {
@@ -477,7 +533,6 @@
                 radioBox.classList.add('playing');
                 playState = 'intro';
                 
-                // Accende la radio e mostra la stazione attiva in alto
                 const st = stations[currentKey];
                 stationNameTag.textContent = st.name;
                 currentTrackInfo.textContent = ""; 
@@ -495,7 +550,7 @@
             isPlaying = false;
             playState = 'stopped';
             radioBox.classList.remove('playing');
-            stationNameTag.textContent = ""; // Pulisce il nome della stazione in alto quando si spegne
+            stationNameTag.textContent = "";
             currentTrackInfo.textContent = "";
             lastTrackText = "";
         }
