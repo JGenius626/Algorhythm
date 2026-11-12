@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Algorhythm - Cyberpunk Edition</title>
+    <title>Algorhythm - VFD Cyberpunk Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -116,6 +116,7 @@
             transition: all 0.3s ease;
         }
 
+        /* Display VFD stile Hi-Fi Cyberpunk */
         .tuner-section {
             flex: 1.3;
             background: #040207;
@@ -126,10 +127,23 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            color: #554477;
+            color: #2a1b42;
             font-family: monospace;
             position: relative;
             transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        /* Effetto griglia VFD scanlines sul display */
+        .tuner-section::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .radio-container.playing .tuner-section {
@@ -139,27 +153,33 @@
             text-shadow: 0 0 8px #39ff14;
         }
 
+        .radio-container.playing .tuner-section::after {
+            opacity: 0.6;
+        }
+
         .tuner-scales {
             display: flex;
             justify-content: space-between;
             font-size: 0.85rem;
             font-weight: bold;
+            z-index: 2;
         }
 
         .tuner-line-container {
             position: relative;
-            height: 35px;
-            border-top: 2px solid currentColor;
-            border-bottom: 2px solid currentColor;
+            height: 30px;
+            border-top: 2px dashed currentColor;
+            border-bottom: 2px dashed currentColor;
             display: flex;
             align-items: center;
+            z-index: 2;
         }
 
         .tuner-needle {
             position: absolute;
             left: 25%;
             width: 4px;
-            height: 30px;
+            height: 26px;
             background: #2a1b42;
             transform: translateX(-50%);
             transition: left 0.5s ease, background 0.3s ease, box-shadow 0.3s ease;
@@ -168,6 +188,49 @@
         .radio-container.playing .tuner-needle {
             background: #39ff14;
             box-shadow: 0 0 12px #39ff14;
+        }
+
+        /* Equalizzatore grafico a LED VFD interno al display */
+        .vfd-eq-container {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            height: 18px;
+            align-items: flex-end;
+            z-index: 2;
+            opacity: 0.2;
+            transition: opacity 0.3s ease;
+        }
+
+        .radio-container.playing .vfd-eq-container {
+            opacity: 1;
+        }
+
+        .vfd-bar {
+            width: 5px;
+            height: 4px;
+            background: #2a1b42;
+            border-radius: 1px;
+            transition: background 0.3s ease;
+        }
+
+        .radio-container.playing .vfd-bar {
+            background: #39ff14;
+            box-shadow: 0 0 6px #39ff14;
+        }
+
+        .radio-container.playing .vfd-bar:nth-child(1) { animation: vfdBounce 0.4s infinite alternate; }
+        .radio-container.playing .vfd-bar:nth-child(2) { animation: vfdBounce 0.6s infinite alternate; animation-delay: 0.1s; }
+        .radio-container.playing .vfd-bar:nth-child(3) { animation: vfdBounce 0.3s infinite alternate; animation-delay: 0.2s; }
+        .radio-container.playing .vfd-bar:nth-child(4) { animation: vfdBounce 0.5s infinite alternate; animation-delay: 0.05s; }
+        .radio-container.playing .vfd-bar:nth-child(5) { animation: vfdBounce 0.4s infinite alternate; animation-delay: 0.25s; }
+        .radio-container.playing .vfd-bar:nth-child(6) { animation: vfdBounce 0.7s infinite alternate; animation-delay: 0.15s; }
+        .radio-container.playing .vfd-bar:nth-child(7) { animation: vfdBounce 0.35s infinite alternate; animation-delay: 0.3s; }
+        .radio-container.playing .vfd-bar:nth-child(8) { animation: vfdBounce 0.55s infinite alternate; animation-delay: 0.1s; }
+
+        @keyframes vfdBounce {
+            0% { height: 4px; }
+            100% { height: 18px; }
         }
 
         .bottom-panel {
@@ -200,7 +263,7 @@
             text-align: center;
             line-height: 1.1;
             width: 75px;
-            height: 26px; /* Altezza fissa uniformata per pareggiare le righe di testo */
+            height: 26px;
             display: flex;
             align-items: flex-end;
             justify-content: center;
@@ -333,6 +396,7 @@
                 <div class="speaker-neon-circle"></div>
             </div>
 
+            <!-- Display VFD con equalizzatore a LED integrato -->
             <div class="tuner-section" id="station-display">
                 <div class="tuner-scales">
                     <span id="station-name-tag"></span>
@@ -341,8 +405,19 @@
                 <div class="tuner-line-container">
                     <div class="tuner-needle" id="tuner-needle"></div>
                 </div>
+                <!-- Equalizzatore grafico VFD attivo a musica accesa -->
+                <div class="vfd-eq-container">
+                    <div class="vfd-bar"></div>
+                    <div class="vfd-bar"></div>
+                    <div class="vfd-bar"></div>
+                    <div class="vfd-bar"></div>
+                    <div class="vfd-bar"></div>
+                    <div class="vfd-bar"></div>
+                    <div class="vfd-bar"></div>
+                    <div class="vfd-bar"></div>
+                </div>
                 <div class="tuner-scales">
-                    <span id="current-track-info" style="font-size: 0.75rem; color: #39ff14; text-shadow: 0 0 8px #39ff14;"></span>
+                    <span id="current-track-info" style="font-size: 0.75rem;"></span>
                 </div>
             </div>
         </div>
